@@ -1,7 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { utilities, WinstonModule } from 'nest-winston';
-import winston from 'winston';
+import * as winston from 'winston';
+import {
+  utilities as nestWinstonModuleUtilities,
+  WinstonModule,
+} from 'nest-winston';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -9,17 +12,17 @@ async function bootstrap() {
       transports: [
         new winston.transports.Console({
           level: process.env.NODE_ENV === 'production' ? 'info' : 'silly',
-          format:
-            process.env.NODE_ENV === 'production'
-              ? winston.format.simple()
-              : winston.format.combine(
-                  winston.format.timestamp(),
-                  utilities.format.nestLike('PRO', { prettyPrint: true }),
-                ),
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            nestWinstonModuleUtilities.format.nestLike('PRO', {
+              prettyPrint: true,
+            }),
+          ),
         }),
       ],
     }),
   });
-  await app.listen(3000);
+  const port = process.env.PORT;
+  await app.listen(port, () => console.log(`Start server port ${port}`));
 }
-bootstrap();
+bootstrap().then();
