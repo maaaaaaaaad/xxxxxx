@@ -8,8 +8,10 @@ import {
 } from 'nest-winston';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { Logger, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
+  const logger = new Logger();
   const app = await NestFactory.create(AppModule, {
     logger: WinstonModule.createLogger({
       transports: [
@@ -38,6 +40,7 @@ async function bootstrap() {
   app.use(helmet());
   app.setGlobalPrefix('api');
   app.useGlobalInterceptors(new LoggingInterceptor());
+  app.useGlobalPipes(new ValidationPipe());
   const port = process.env.PORT;
   if (process.env.NODE_ENV === 'development') {
     const config = new DocumentBuilder()
@@ -48,6 +51,6 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('docs', app, document);
   }
-  await app.listen(port, () => console.log(`Start server port ${port}`));
+  await app.listen(port, () => logger.log(`Start server port ${port}`));
 }
 bootstrap().then();

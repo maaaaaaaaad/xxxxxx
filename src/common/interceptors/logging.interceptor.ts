@@ -18,12 +18,14 @@ export class LoggingInterceptor implements NestInterceptor {
     return next
       .handle()
       .pipe(
-        tap((data) =>
-          this.logger.log(
-            `Response from ${method} ${url} ${ip} response: ${JSON.stringify(
-              data,
-            )}`,
-          ),
+        tap(
+          (data) =>
+            data &&
+            this.logger.log(
+              `Response from ${method} ${url} ${ip} response: ${JSON.stringify(
+                data,
+              )}`,
+            ),
         ),
       );
   }
