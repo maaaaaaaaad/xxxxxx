@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as winston from 'winston';
+import helmet from 'helmet';
+import * as csurf from 'csurf';
 import {
   utilities as nestWinstonModuleUtilities,
   WinstonModule,
@@ -31,6 +33,8 @@ async function bootstrap() {
       ],
     }),
   });
+  app.use(helmet());
+  app.use(csurf());
   const port = process.env.PORT;
   app.useGlobalInterceptors(new LoggingInterceptor());
   await app.listen(port, () => console.log(`Start server port ${port}`));

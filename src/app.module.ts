@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -17,7 +18,13 @@ import * as Joi from 'joi';
           .valid('development', 'production', 'test')
           .default('development'),
         PORT: Joi.string().required(),
+        TTL: Joi.number().required(),
+        LIMIT: Joi.number().required(),
       }),
+    }),
+    ThrottlerModule.forRoot({
+      ttl: +process.env.TTL,
+      limit: +process.env.LIMIT,
     }),
   ],
   controllers: [],
