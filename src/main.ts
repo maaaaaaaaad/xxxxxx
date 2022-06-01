@@ -5,6 +5,7 @@ import {
   utilities as nestWinstonModuleUtilities,
   WinstonModule,
 } from 'nest-winston';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -31,6 +32,7 @@ async function bootstrap() {
     }),
   });
   const port = process.env.PORT;
+  app.useGlobalInterceptors(new LoggingInterceptor());
   await app.listen(port, () => console.log(`Start server port ${port}`));
 }
 bootstrap().then();
