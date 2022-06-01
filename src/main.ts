@@ -16,7 +16,9 @@ async function bootstrap() {
         new winston.transports.Console({
           level: process.env.NODE_ENV === 'production' ? 'info' : 'silly',
           format: winston.format.combine(
-            winston.format.timestamp(),
+            winston.format.timestamp({
+              format: new Date().toLocaleString('ko-KR', { hour12: true }),
+            }),
             nestWinstonModuleUtilities.format.nestLike('PRO', {
               prettyPrint: true,
             }),

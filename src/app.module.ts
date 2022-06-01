@@ -2,14 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import dbConfiguration from './config/database.config';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [dbConfiguration],
       envFilePath:
         process.env.NODE_ENV === 'production'
           ? '.env.production'
@@ -38,8 +36,27 @@ import dbConfiguration from './config/database.config';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        ...configService.get('database'),
+      useFactory: async (
+        configService: ConfigService,
+      ): Promise<TypeOrmModuleOptions> => ({
+        name: configService.get<string>('TYPEORM_NAME'),
+        type: 'postgres',
+        host: configService.get<string>('DATABASE_HOST'),
+        port: configService.get<number>('DATABASE_PORT'),
+        username: configService.get<string>('DATABASE_USERNAME'),
+        password: configService.get<string>('DATABASE_PASSWORD'),
+        database: configService.get<string>('DATABASE_DB_NAME'),
+        entities: [__dirname + '/*/entities/*.entity{.ts,.js}'],
+        synchronize: process.env.NODE_ENV !== 'production',
+        logging: true,
+        migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+        cli: {
+          migrationsDir: 'src/migrations',
+        },
+        migrationsRun: false,
+        ...(process.env.NODE_ENV === 'production' && {
+          ssl: { rejectUnauthorized: false },
+        }),
       }),
     }),
   ],
