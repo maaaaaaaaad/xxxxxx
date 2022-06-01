@@ -1,8 +1,10 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { MongooseModule } from '@nestjs/mongoose';
+import { AuthModule } from './auth/auth.module';
+import * as mongoose from 'mongoose';
 
 @Module({
   imports: [
@@ -21,46 +23,29 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
         PORT: Joi.string().required(),
         TTL: Joi.number().required(),
         LIMIT: Joi.number().required(),
-        TYPEORM_NAME: Joi.string().required(),
-        DATABASE_HOST: Joi.string().required(),
-        DATABASE_PORT: Joi.number().required(),
-        DATABASE_USERNAME: Joi.string().required(),
-        DATABASE_PASSWORD: Joi.string().required(),
-        DATABASE_DB_NAME: Joi.string().required(),
+        DATABASE_URL: Joi.string().required(),
       }),
     }),
-    ThrottlerModule.forRoot({
-      ttl: +process.env.TTL,
-      limit: +process.env.LIMIT,
-    }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
+    MongooseModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: async (
-        configService: ConfigService,
-      ): Promise<TypeOrmModuleOptions> => ({
-        name: configService.get<string>('TYPEORM_NAME'),
-        type: 'postgres',
-        host: configService.get<string>('DATABASE_HOST'),
-        port: configService.get<number>('DATABASE_PORT'),
-        username: configService.get<string>('DATABASE_USERNAME'),
-        password: configService.get<string>('DATABASE_PASSWORD'),
-        database: configService.get<string>('DATABASE_DB_NAME'),
-        entities: [__dirname + '/*/entities/*.entity{.ts,.js}'],
-        synchronize: process.env.NODE_ENV !== 'production',
-        logging: true,
-        migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
-        cli: {
-          migrationsDir: 'src/migrations',
-        },
-        migrationsRun: false,
-        ...(process.env.NODE_ENV === 'production' && {
-          ssl: { rejectUnauthorized: false },
-        }),
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('DATABASE_URL'),
       }),
     }),
+    ThrottlerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        ttl: configService.get<number>('TTL'),
+        limit: configService.get<number>('LIMIT'),
+      }),
+    }),
+    AuthModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(_: MiddlewareConsumer): void {
+    mongoose.set('debug', process.env.NODE_ENV !== 'production');
+  }
+}
