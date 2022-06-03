@@ -4,6 +4,7 @@ import * as Joi from 'joi';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
+import { RedisModule } from './redis/redis.module';
 import * as mongoose from 'mongoose';
 
 @Module({
@@ -24,6 +25,8 @@ import * as mongoose from 'mongoose';
         TTL: Joi.number().required(),
         LIMIT: Joi.number().required(),
         DATABASE_URL: Joi.string().required(),
+        CACHE_DB_HOST: Joi.string().required(),
+        CACHE_DB_PORT: Joi.string().required(),
       }),
     }),
     MongooseModule.forRootAsync({
@@ -40,6 +43,7 @@ import * as mongoose from 'mongoose';
       }),
     }),
     AuthModule,
+    RedisModule,
   ],
   controllers: [],
   providers: [],
