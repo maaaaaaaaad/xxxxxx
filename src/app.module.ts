@@ -5,7 +5,9 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { RedisModule } from './redis/redis.module';
+import { HealthModule } from './health/health.module';
 import * as mongoose from 'mongoose';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -42,8 +44,10 @@ import * as mongoose from 'mongoose';
         limit: configService.get<number>('LIMIT'),
       }),
     }),
+    ScheduleModule.forRoot(),
     AuthModule,
     RedisModule,
+    HealthModule,
   ],
   controllers: [],
   providers: [],
