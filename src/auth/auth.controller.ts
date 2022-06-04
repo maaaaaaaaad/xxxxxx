@@ -9,6 +9,6 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @Post()
   async register(@Body() dto: UserRegisterInputDto) {
-    return dto;
+    return this.authService.register(dto);
   }
 }

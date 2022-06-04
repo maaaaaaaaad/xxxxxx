@@ -9,7 +9,7 @@ interface HashPassword extends Document {
 }
 
 @Schema({ timestamps: true })
-export class Users extends Document {
+export class Users {
   @Prop({
     required: [true, 'User email required'],
     unique: true,
