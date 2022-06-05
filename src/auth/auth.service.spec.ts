@@ -10,10 +10,14 @@ const dto: UserRegisterInputDto = {
   password: 'mock123',
 };
 
-const fakeUsersModel = {
-  exists: jest.fn(),
-  save: jest.fn().mockResolvedValue(Users),
-};
+class MockUsersRepository {
+  private readonly data = [{ email: 'mock@gmail.com' }];
+  exists({ email }: { email: string }) {
+    const find = this.data.find((v) => v.email === email);
+    if (find) throw new ConflictException('User already to exists');
+    return find;
+  }
+}
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -24,15 +28,11 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: getModelToken(Users.name),
-          useValue: fakeUsersModel,
+          useClass: MockUsersRepository,
         },
       ],
     }).compile();
     service = module.get<AuthService>(AuthService);
-  });
-
-  afterEach(() => {
-    fakeUsersModel.exists.mockClear();
   });
 
   it('should be defined', () => {
@@ -40,18 +40,10 @@ describe('AuthService', () => {
   });
 
   describe('register', () => {
-    it('email already to exists', async () => {
-      fakeUsersModel.exists.mockResolvedValue(dto.email);
-      try {
-        await service.register(dto);
-      } catch (e) {
-        expect(e).toBeInstanceOf(ConflictException);
-      }
-    });
-
-    it('should called the save', async () => {
-      const result = await service.register(dto);
-      console.log(result);
+    it('email already to exists', () => {
+      expect(
+        service.register({ email: dto.email, password: dto.password }),
+      ).rejects.toBeInstanceOf(ConflictException);
     });
   });
 });
