@@ -14,8 +14,8 @@ class MockUsersRepository {
   private readonly data = [{ email: 'mock@gmail.com' }];
   exists({ email }: { email: string }) {
     const find = this.data.find((v) => v.email === email);
-    if (find) throw new ConflictException('User already to exists');
-    return find;
+    if (find) return find;
+    return null;
   }
 }
 
@@ -40,10 +40,12 @@ describe('AuthService', () => {
   });
 
   describe('register', () => {
-    it('email already to exists', () => {
-      expect(
-        service.register({ email: dto.email, password: dto.password }),
-      ).rejects.toBeInstanceOf(ConflictException);
+    it('should register', async () => {
+      jest.spyOn(service, 'register').mockResolvedValue({ result: dto });
+      const result = await service.register(dto);
+      await expect(result).toMatchObject({
+        result: { email: 'mock@gmail.com', password: 'mock123' },
+      });
     });
   });
 });
