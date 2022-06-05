@@ -5,6 +5,6 @@ import { BaseOutputDto } from '../../common/dtos/base.output.dto';
 export class UserRegisterInputDto extends PickType(Users, [
   'email',
   'password',
-]) {}
+] as const) {}
 
 export class UserRegisterOutputDto extends BaseOutputDto<Users> {}
