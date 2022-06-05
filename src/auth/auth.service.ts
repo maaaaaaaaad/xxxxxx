@@ -6,7 +6,10 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Users } from './schemas/users.schema';
 import { Model } from 'mongoose';
-import { UserRegisterInputDto } from './dtos/user.register.dto';
+import {
+  UserRegisterInputDto,
+  UserRegisterOutputDto,
+} from './dtos/user.register.dto';
 
 @Injectable()
 export class AuthService {
@@ -14,11 +17,16 @@ export class AuthService {
     @InjectModel(Users.name) private readonly usersRepository: Model<Users>,
   ) {}
 
-  async register({ email, password }: UserRegisterInputDto) {
+  async register({
+    email,
+    password,
+  }: UserRegisterInputDto): Promise<UserRegisterOutputDto> {
     const exists = await this.usersRepository.exists({ email });
     if (exists) throw new ConflictException('User already to exists');
     try {
-      return await new this.usersRepository({ email, password }).save();
+      return {
+        result: await new this.usersRepository({ email, password }).save(),
+      };
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
