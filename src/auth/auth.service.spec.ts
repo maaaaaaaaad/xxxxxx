@@ -3,11 +3,30 @@ import { AuthService } from './auth.service';
 import { getModelToken } from '@nestjs/mongoose';
 import { Users } from './schemas/users.schema';
 import { UserRegisterInputDto } from './dtos/user.register.dto';
-import { ConflictException } from '@nestjs/common';
+import {
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 const dto: UserRegisterInputDto = {
   email: 'mock@gmail.com',
   password: 'mock123',
+};
+
+const mockData = [{ email: 'mock@gmail.com' }];
+
+const MockUsersRepository = {
+  exists: jest.fn().mockImplementation((dto: string) => {
+    const find = mockData.find((v) => v.email === dto['email']);
+    if (find) throw new ConflictException();
+    return null;
+  }),
+
+  save: jest.fn().mockImplementation(() => {
+    return {
+      result: dto,
+    };
+  }),
 };
 
 describe('AuthService', () => {
@@ -19,7 +38,7 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: getModelToken(Users.name),
-          useValue: {},
+          useValue: MockUsersRepository,
         },
       ],
     }).compile();
@@ -31,28 +50,49 @@ describe('AuthService', () => {
   });
 
   describe('register', () => {
-    let mockRegister;
-    it('the email already to exists', async () => {
-      mockRegister = jest
-        .spyOn(service, 'register')
-        .mockRejectedValue(new ConflictException());
-      try {
-        await service.register(dto);
-      } catch (e) {
-        expect(e).toBeInstanceOf(ConflictException);
-      }
+    it('email already to exists', () => {
+      expect(service.register(dto)).rejects.toBeInstanceOf(ConflictException);
     });
 
-    it('should register', async () => {
-      mockRegister = jest
-        .spyOn(service, 'register')
-        .mockResolvedValue(Promise.resolve({ result: dto }));
-      const result = await service.register(dto);
-      expect(mockRegister).toBeCalledTimes(1);
-      expect(mockRegister).toHaveBeenCalledTimes(1);
-      await expect(result).toMatchObject({
-        result: dto,
-      });
+    it('should success register', async () => {
+      try {
+        const result = await service.register({
+          email: 'success@gmail.com',
+          password: 'success',
+        });
+        await expect(result).resolves.toBeDefined();
+      } catch (e) {
+        expect(e).toBeInstanceOf(InternalServerErrorException);
+      }
     });
   });
+
+  // describe('register', () => {
+  //   let mockRegister;
+  //   it('the email already to exists', async () => {
+  //     mockRegister = jest
+  //       .spyOn(service, 'register')
+  //       .mockRejectedValue(new ConflictException());
+  //     try {
+  //       await service.register(dto);
+  //       expect(mockRegister).toBeCalledTimes(1);
+  //       expect(mockRegister).toHaveBeenCalledTimes(1);
+  //     } catch (e) {
+  //       expect(e).toBeInstanceOf(ConflictException);
+  //     }
+  //   });
+  //
+  //   it('should register', async () => {
+  //     mockRegister = jest
+  //       .spyOn(service, 'register')
+  //       .mockResolvedValue(Promise.resolve({ result: dto }));
+  //     const result = await service.register(dto);
+  //     expect(mockRegister).toBeCalledTimes(1);
+  //     expect(mockRegister).toHaveBeenCalledTimes(1);
+  //     expect(mockRegister).toHaveBeenCalledWith(dto);
+  //     await expect(result).toMatchObject({
+  //       result: dto,
+  //     });
+  //   });
+  // });
 });
