@@ -66,33 +66,4 @@ describe('AuthService', () => {
       }
     });
   });
-
-  // describe('register', () => {
-  //   let mockRegister;
-  //   it('the email already to exists', async () => {
-  //     mockRegister = jest
-  //       .spyOn(service, 'register')
-  //       .mockRejectedValue(new ConflictException());
-  //     try {
-  //       await service.register(dto);
-  //       expect(mockRegister).toBeCalledTimes(1);
-  //       expect(mockRegister).toHaveBeenCalledTimes(1);
-  //     } catch (e) {
-  //       expect(e).toBeInstanceOf(ConflictException);
-  //     }
-  //   });
-  //
-  //   it('should register', async () => {
-  //     mockRegister = jest
-  //       .spyOn(service, 'register')
-  //       .mockResolvedValue(Promise.resolve({ result: dto }));
-  //     const result = await service.register(dto);
-  //     expect(mockRegister).toBeCalledTimes(1);
-  //     expect(mockRegister).toHaveBeenCalledTimes(1);
-  //     expect(mockRegister).toHaveBeenCalledWith(dto);
-  //     await expect(result).toMatchObject({
-  //       result: dto,
-  //     });
-  //   });
-  // });
 });
