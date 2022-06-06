@@ -10,15 +10,6 @@ const dto: UserRegisterInputDto = {
   password: 'mock123',
 };
 
-class MockUsersRepository {
-  private readonly data = [{ email: 'mock@gmail.com' }];
-  exists({ email }: { email: string }) {
-    const find = this.data.find((v) => v.email === email);
-    if (find) return find;
-    return null;
-  }
-}
-
 describe('AuthService', () => {
   let service: AuthService;
 
@@ -28,7 +19,7 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: getModelToken(Users.name),
-          useClass: MockUsersRepository,
+          useValue: {},
         },
       ],
     }).compile();
@@ -40,11 +31,27 @@ describe('AuthService', () => {
   });
 
   describe('register', () => {
+    let mockRegister;
+    it('the email already to exists', async () => {
+      mockRegister = jest
+        .spyOn(service, 'register')
+        .mockRejectedValue(new ConflictException());
+      try {
+        await service.register(dto);
+      } catch (e) {
+        expect(e).toBeInstanceOf(ConflictException);
+      }
+    });
+
     it('should register', async () => {
-      jest.spyOn(service, 'register').mockResolvedValue({ result: dto });
+      mockRegister = jest
+        .spyOn(service, 'register')
+        .mockResolvedValue(Promise.resolve({ result: dto }));
       const result = await service.register(dto);
+      expect(mockRegister).toBeCalledTimes(1);
+      expect(mockRegister).toHaveBeenCalledTimes(1);
       await expect(result).toMatchObject({
-        result: { email: 'mock@gmail.com', password: 'mock123' },
+        result: dto,
       });
     });
   });
