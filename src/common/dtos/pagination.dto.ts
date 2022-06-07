@@ -1,11 +1,17 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsInt, IsNotEmpty } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class PaginationInputDto {
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
+  @Type(() => Number)
+  @ApiProperty({ required: true, nullable: false, type: Number, default: 1 })
   page = 1;
 
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
+  @Type(() => Number)
+  @ApiProperty({ required: true, nullable: false, type: Number, default: 1 })
   size = 1;
 }

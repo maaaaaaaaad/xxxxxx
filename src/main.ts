@@ -41,7 +41,12 @@ async function bootstrap() {
   app.use(helmet());
   app.setGlobalPrefix('api');
   app.useGlobalInterceptors(new LoggingInterceptor(logger));
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  );
   app.useGlobalFilters(new HttpExceptionFilter(logger));
   const port = process.env.PORT;
   if (process.env.NODE_ENV === 'development') {

@@ -22,7 +22,7 @@ export class LoggingInterceptor implements NestInterceptor {
           (data) =>
             data &&
             this.logger.log(
-              `Response from ${method} ${url} ${ip} response: ${JSON.stringify(
+              `Response from ${method} ${url} ip${ip} response: ${JSON.stringify(
                 data,
               )}`,
             ),
