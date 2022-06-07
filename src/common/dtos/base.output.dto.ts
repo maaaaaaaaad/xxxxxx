@@ -1,3 +1,3 @@
 export class BaseOutputDto<T> {
-  result: T;
+  data: T;
 }

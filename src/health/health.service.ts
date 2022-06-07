@@ -9,10 +9,15 @@ export class HealthService {
     private health: HealthCheckService,
   ) {}
 
+  async pingCheck() {
+    return await this.http.pingCheck(
+      'pro-swagger',
+      'http://127.0.0.1:8888/docs',
+    );
+  }
+
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async check() {
-    return await this.health.check([
-      () => this.http.pingCheck('pro-swagger', 'http://127.0.0.1:8888/docs'),
-    ]);
+  async healthCheck() {
+    return await this.health.check([() => this.pingCheck()]);
   }
 }

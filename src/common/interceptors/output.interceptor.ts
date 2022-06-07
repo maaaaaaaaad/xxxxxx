@@ -12,6 +12,6 @@ export class OutputInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next
       .handle()
-      .pipe(map((data) => (data === undefined || null ? null : { data })));
+      .pipe(map((data) => (data === undefined || null ? null : data)));
   }
 }

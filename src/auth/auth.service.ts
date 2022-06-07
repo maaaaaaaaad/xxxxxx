@@ -10,6 +10,7 @@ import {
   UserRegisterInputDto,
   UserRegisterOutputDto,
 } from './dtos/user.register.dto';
+import { PaginationInputDto } from '../common/dtos/pagination.dto';
 
 @Injectable()
 export class AuthService {
@@ -25,10 +26,25 @@ export class AuthService {
     if (exists) throw new ConflictException('User already to exists');
     try {
       return {
-        result: await new this.usersRepository({ email, password }).save(),
+        data: await new this.usersRepository({ email, password }).save(),
       };
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
+  }
+
+  async list({ page, size }: PaginationInputDto) {
+    const { users, count } = await this.usersRepository
+      .find({})
+      .limit(size)
+      .skip((page - 1) * size)
+      .then((users) => {
+        return {
+          users,
+          count: users.length,
+        };
+      });
+    console.log(users);
+    console.log(count);
   }
 }

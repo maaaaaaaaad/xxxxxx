@@ -18,13 +18,13 @@ const mockData = [{ email: 'mock@gmail.com' }];
 const MockUsersRepository = {
   exists: jest.fn().mockImplementation((dto: string) => {
     const find = mockData.find((v) => v.email === dto['email']);
-    if (find) throw new ConflictException();
+    if (find) throw new ConflictException('User already to exists');
     return null;
   }),
 
   save: jest.fn().mockImplementation(() => {
     return {
-      result: dto,
+      data: dto,
     };
   }),
 };
