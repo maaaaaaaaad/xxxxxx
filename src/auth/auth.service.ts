@@ -11,6 +11,7 @@ import {
   UserRegisterOutputDto,
 } from './dtos/user.register.dto';
 import { PaginationInputDto } from '../common/dtos/pagination.dto';
+import { UserListOutputDto } from './dtos/user.list.dto';
 
 @Injectable()
 export class AuthService {
@@ -33,18 +34,24 @@ export class AuthService {
     }
   }
 
-  async list({ page, size }: PaginationInputDto) {
-    const { users, count } = await this.usersRepository
-      .find({})
-      .limit(size)
-      .skip((page - 1) * size)
-      .then((users) => {
-        return {
+  async list({ page, size }: PaginationInputDto): Promise<UserListOutputDto> {
+    try {
+      const [users, count] = await Promise.all([
+        this.usersRepository
+          .find({})
+          .limit(size)
+          .skip((page - 1) * size),
+        this.usersRepository.count(),
+      ]);
+      return {
+        data: {
           users,
-          count: users.length,
-        };
-      });
-    console.log(users);
-    console.log(count);
+          count,
+          totalPage: Math.ceil(count / size),
+        },
+      };
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
   }
 }
