@@ -3,31 +3,34 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Users } from './schemas/users.schema';
-import { Model } from 'mongoose';
 import {
   UserRegisterInputDto,
   UserRegisterOutputDto,
 } from './dtos/user.register.dto';
 import { PaginationInputDto } from '../common/dtos/pagination.dto';
 import { UserListOutputDto } from './dtos/user.list.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UsersEntity } from './entities/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(Users.name) private readonly usersRepository: Model<Users>,
+    @InjectRepository(UsersEntity)
+    private readonly usersRepository: Repository<UsersEntity>,
   ) {}
 
   async register({
     email,
     password,
   }: UserRegisterInputDto): Promise<UserRegisterOutputDto> {
-    const exists = await this.usersRepository.exists({ email });
-    if (exists) throw new ConflictException('User already to exists');
+    const user = await this.usersRepository.findOne({ where: { email } });
+    if (user) throw new ConflictException('User already to exists');
     try {
       return {
-        data: await new this.usersRepository({ email, password }).save(),
+        data: await this.usersRepository.save(
+          this.usersRepository.create({ email, password }),
+        ),
       };
     } catch (e) {
       throw new InternalServerErrorException(e.message);
@@ -36,13 +39,13 @@ export class AuthService {
 
   async list({ page, size }: PaginationInputDto): Promise<UserListOutputDto> {
     try {
-      const [users, count] = await Promise.all([
-        this.usersRepository
-          .find({})
-          .limit(size)
-          .skip((page - 1) * size),
-        this.usersRepository.count(),
-      ]);
+      const [users, count] = await this.usersRepository.findAndCount({
+        take: size,
+        skip: (page - 1) * size,
+        order: {
+          createAt: 'DESC',
+        },
+      });
       return {
         data: {
           users,

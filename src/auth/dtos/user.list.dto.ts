@@ -1,9 +1,9 @@
 import { PaginationInputDto } from '../../common/dtos/pagination.dto';
 import { BaseOutputDto } from '../../common/dtos/base.output.dto';
-import { Users } from '../schemas/users.schema';
+import { UsersEntity } from '../entities/user.entity';
 
 type UserList = {
-  users: Users[];
+  users: UsersEntity[];
   count: number;
   totalPage: number;
 };
