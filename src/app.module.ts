@@ -8,6 +8,8 @@ import { RedisModule } from './redis/redis.module';
 import { HealthModule } from './health/health.module';
 import * as mongoose from 'mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DatabaseConfiguration } from './database.configuration';
 
 @Module({
   imports: [
@@ -30,6 +32,9 @@ import { ScheduleModule } from '@nestjs/schedule';
         CACHE_DB_HOST: Joi.string().required(),
         CACHE_DB_PORT: Joi.string().required(),
       }),
+    }),
+    TypeOrmModule.forRootAsync({
+      useClass: DatabaseConfiguration,
     }),
     MongooseModule.forRootAsync({
       inject: [ConfigService],
