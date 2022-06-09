@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { getModelToken } from '@nestjs/mongoose';
-import { Users } from './schemas/users.schema';
 import { UserRegisterInputDto } from './dtos/user.register.dto';
 import {
   ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { UsersEntity } from './entities/user.entity';
 
 const dto: UserRegisterInputDto = {
   email: 'mock@gmail.com',
@@ -16,10 +16,10 @@ const dto: UserRegisterInputDto = {
 const mockData = [{ email: 'mock@gmail.com' }];
 
 const MockUsersRepository = {
-  exists: jest.fn().mockImplementation((dto: string) => {
+  findOne: jest.fn().mockImplementation((dto: string) => {
     const find = mockData.find((v) => v.email === dto['email']);
     if (find) throw new ConflictException('User already to exists');
-    return null;
+    return find;
   }),
 
   save: jest.fn().mockImplementation(() => {
@@ -37,7 +37,7 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         {
-          provide: getModelToken(Users.name),
+          provide: getRepositoryToken(UsersEntity),
           useValue: MockUsersRepository,
         },
       ],

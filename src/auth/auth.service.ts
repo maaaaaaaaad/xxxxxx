@@ -20,6 +20,12 @@ export class AuthService {
     private readonly usersRepository: Repository<UsersEntity>,
   ) {}
 
+  private static filter(user: UsersEntity): Pick<UsersEntity, 'id' | 'email'> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = user;
+    return result;
+  }
+
   async register({
     email,
     password,
@@ -27,10 +33,11 @@ export class AuthService {
     const user = await this.usersRepository.findOne({ where: { email } });
     if (user) throw new ConflictException('User already to exists');
     try {
+      const user = await this.usersRepository.save(
+        this.usersRepository.create({ email, password }),
+      );
       return {
-        data: await this.usersRepository.save(
-          this.usersRepository.create({ email, password }),
-        ),
+        data: AuthService.filter(user),
       };
     } catch (e) {
       throw new InternalServerErrorException(e.message);
