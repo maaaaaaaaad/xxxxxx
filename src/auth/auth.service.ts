@@ -6,6 +6,7 @@ import {
 import {
   UserRegisterInputDto,
   UserRegisterOutputDto,
+  UserRegisterOutputType,
 } from './dtos/user.register.dto';
 import { PaginationInputDto } from '../common/dtos/pagination.dto';
 import { UserListOutputDto } from './dtos/user.list.dto';
@@ -20,7 +21,7 @@ export class AuthService {
     private readonly usersRepository: Repository<UsersEntity>,
   ) {}
 
-  private static filter(user: UsersEntity): Pick<UsersEntity, 'id' | 'email'> {
+  private static filter(user: UsersEntity): UserRegisterOutputType {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...result } = user;
     return result;
