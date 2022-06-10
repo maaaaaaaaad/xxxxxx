@@ -45,7 +45,7 @@ export class AuthService implements IAuthService {
         data: AuthService.filter(user),
       };
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e, 'SERVER ERROR');
     }
   }
 
@@ -66,7 +66,7 @@ export class AuthService implements IAuthService {
         },
       };
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e, 'SERVER ERROR');
     }
   }
 }

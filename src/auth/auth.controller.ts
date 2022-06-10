@@ -8,7 +8,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { OutputInterceptor } from '../common/interceptors/output.interceptor';
-import { AuthService } from './auth.service';
 import {
   UserRegisterInputDto,
   UserRegisterOutputDto,
@@ -29,8 +28,8 @@ export class AuthController {
     return await this.authService.register(userRegisterInputDto);
   }
 
-  @Get('all')
-  async all(
+  @Get('list')
+  async list(
     @Query() userListInputDto: UserListInputDto,
   ): Promise<UserListOutputDto> {
     return await this.authService.list(userListInputDto);
