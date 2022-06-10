@@ -13,9 +13,10 @@ import { UserListOutputDto } from './dtos/user.list.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { IAuthService } from './interfaces/auth.service.interface';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements IAuthService {
   constructor(
     @InjectRepository(UsersEntity)
     private readonly usersRepository: Repository<UsersEntity>,
@@ -35,7 +36,10 @@ export class AuthService {
     if (user) throw new ConflictException('User already to exists');
     try {
       const user = await this.usersRepository.save(
-        this.usersRepository.create({ email, password }),
+        this.usersRepository.create({
+          email,
+          password,
+        }),
       );
       return {
         data: AuthService.filter(user),

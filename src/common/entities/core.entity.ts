@@ -19,5 +19,5 @@ export abstract class CoreEntity extends BaseEntity {
   updateAt: Date;
 
   @DeleteDateColumn({ default: null })
-  deleteAt: Date;
+  deleteAt: Date | null;
 }

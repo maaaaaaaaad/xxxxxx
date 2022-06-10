@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Inject,
   Post,
   Query,
   UseInterceptors,
@@ -13,11 +14,14 @@ import {
   UserRegisterOutputDto,
 } from './dtos/user.register.dto';
 import { UserListInputDto, UserListOutputDto } from './dtos/user.list.dto';
+import { IAuthService } from './interfaces/auth.service.interface';
 
 @Controller('auth')
 @UseInterceptors(OutputInterceptor)
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    @Inject('AUTH_SERVICE') private readonly authService: IAuthService,
+  ) {}
   @Post()
   async register(
     @Body() userRegisterInputDto: UserRegisterInputDto,
