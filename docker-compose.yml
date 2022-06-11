@@ -1,0 +1,24 @@
+version: '3'
+services:
+  db:
+    image: mysql:8.0.29
+    restart: always
+    volumes:
+      - sql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: $DB_USER_PASSWORD
+      MYSQL_DATABASE: pro
+
+  server:
+    restart: always
+    container_name: pro-server
+    image: maaaaaaaaad/pro-server:0.1
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env.production
+    ports:
+      - '9999:8888'
+    depends_on:
+      - db
