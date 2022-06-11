@@ -6,8 +6,8 @@ services:
     volumes:
       - sql:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: $DB_USER_PASSWORD
-      MYSQL_DATABASE: pro
+      - MYSQL_ROOT_PASSWORD=12345
+      - MYSQL_DATABASE=pro
 
   server:
     restart: always
@@ -16,9 +16,18 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-    env_file:
-      - ./.env.production
+    environment:
+      - PORT=9999
+      - TTL=60
+      - LIMIT=10
+      - CACHE_DB_HOST=localhost
+      - CACHE_DB_PORT=6379
+      - DB_HOST=localhost
+      - DB_PORT=3306
+      - DB_USER_NAME=root
+      - DB_USER_PASSWORD=12345
+      - DB_NAME=pro
     ports:
-      - '8888:8888'
+      - '8888:9999'
     depends_on:
       - db
