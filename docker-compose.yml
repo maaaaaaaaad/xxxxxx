@@ -3,8 +3,6 @@ services:
   db:
     image: mysql:8.0.29
     restart: always
-    volumes:
-      - sql:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=12345
       - MYSQL_DATABASE=pro
