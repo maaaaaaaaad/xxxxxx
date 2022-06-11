@@ -19,6 +19,6 @@ services:
     env_file:
       - ./.env.production
     ports:
-      - '9999:8888'
+      - '8888:8888'
     depends_on:
       - db
