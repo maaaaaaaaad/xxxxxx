@@ -4,6 +4,7 @@ services:
   db:
     image: mysql
     restart: always
+    user: root
     command:
       - --lower_case_table_names=1
       - --character-set-server=utf8mb4
