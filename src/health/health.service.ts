@@ -5,10 +5,9 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 @Injectable()
 export class HealthService {
   constructor(
-    private http: HttpHealthIndicator,
-    private health: HealthCheckService,
+    private readonly http: HttpHealthIndicator,
+    private readonly health: HealthCheckService,
   ) {}
-
   async pingCheck() {
     return await this.http.pingCheck(
       'pro-swagger',
