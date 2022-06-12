@@ -1,22 +1,19 @@
-version: '3'
+version: '3.1'
+
 services:
-  server:
+  db:
+    image: mysql
     restart: always
-    container_name: pro-server
-    image: maaaaaaaaad/pro-server:0.1
-    build:
-      context: ./
-      dockerfile: Dockerfile
+    command:
+      - --lower_case_table_names=1
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    container_name: mysql-db
     environment:
-      - PORT=9999
-      - TTL=60
-      - LIMIT=10
-      - CACHE_DB_HOST=localhost
-      - CACHE_DB_PORT=6379
-      - DB_HOST=localhost
-      - DB_PORT=3306
-      - DB_USER_NAME=root
-      - DB_USER_PASSWORD=12345
-      - DB_NAME=pro
+      - MYSQL_DATABASE=pro
+      - MYSQL_ROOT_PASSWORD=12345
+      - TZ=Asia/Seoul
+    volumes:
+      - ./db:/var/lib/mysql
     ports:
-      - '8888:9999'
+      - '3306:3306'
