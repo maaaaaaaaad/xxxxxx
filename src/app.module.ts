@@ -26,7 +26,6 @@ import { DatabaseConfiguration } from './database.configuration';
         PORT: Joi.string().required(),
         TTL: Joi.number().required(),
         LIMIT: Joi.number().required(),
-        DATABASE_URL: Joi.string().required(),
         CACHE_DB_HOST: Joi.string().required(),
         CACHE_DB_PORT: Joi.string().required(),
         DB_HOST: Joi.string().required(),
