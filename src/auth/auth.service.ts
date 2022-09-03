@@ -1,6 +1,5 @@
 import {
   ConflictException,
-  Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -21,8 +20,6 @@ export class AuthService implements IAuthService {
   constructor(
     @InjectRepository(UsersEntity)
     private readonly usersRepository: Repository<UsersEntity>,
-    @Inject('CONFLICT_EXCEPTION_FILTER')
-    private readonly conflictException: ConflictException,
   ) {}
 
   private static filter(user: UsersEntity): UserRegisterOutputType {
@@ -36,7 +33,7 @@ export class AuthService implements IAuthService {
     password,
   }: UserRegisterInputDto): Promise<UserRegisterOutputDto> {
     const user = await this.usersRepository.findOne({ where: { email } });
-    if (user) throw this.conflictException;
+    if (user) throw new ConflictException('email already to exist');
 
     try {
       const user = await this.usersRepository.save(
