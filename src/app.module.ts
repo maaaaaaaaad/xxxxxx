@@ -2,12 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { AuthModule } from './auth/auth.module';
-import { RedisModule } from './redis/redis.module';
-import { HealthModule } from './health/health.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { DatabaseConfiguration } from './database.configuration';
 
 @Module({
   imports: [
@@ -35,9 +30,6 @@ import { DatabaseConfiguration } from './database.configuration';
         DB_NAME: Joi.string().required(),
       }),
     }),
-    TypeOrmModule.forRootAsync({
-      useClass: DatabaseConfiguration,
-    }),
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
@@ -46,9 +38,6 @@ import { DatabaseConfiguration } from './database.configuration';
       }),
     }),
     ScheduleModule.forRoot(),
-    AuthModule,
-    RedisModule,
-    HealthModule,
   ],
   controllers: [],
   providers: [],
