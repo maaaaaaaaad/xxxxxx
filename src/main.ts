@@ -6,10 +6,8 @@ import {
   utilities as nestWinstonModuleUtilities,
   WinstonModule,
 } from 'nest-winston';
-import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { HttpExceptionFilter } from './common/exceptions/http.exception.filter';
 
 async function bootstrap() {
   const logger = new Logger();
@@ -40,14 +38,12 @@ async function bootstrap() {
   });
   app.use(helmet());
   app.setGlobalPrefix('api');
-  app.useGlobalInterceptors(new LoggingInterceptor(logger));
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
       transformOptions: { enableImplicitConversion: true },
     }),
   );
-  app.useGlobalFilters(new HttpExceptionFilter(logger));
   const port = process.env.PORT;
   if (process.env.NODE_ENV === 'development') {
     const config = new DocumentBuilder()
