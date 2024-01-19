@@ -1,47 +1,27 @@
-#include <string>
+#include <iostream>
 #include <vector>
-#include <algorithm>
-
-#define MAX_DIST 1e9
-
 using namespace std;
-
-vector<int> rocksVec;
-
-int binarySearch(int distance, int n){
-    int left = 0;
-    int right = distance;
-    
-    int result = 0;
-    while(left <= right){
-        int mid = (left + right) / 2;
-        
-        int cnt = 0;
-        int pos = 0;
-        int minDist = MAX_DIST;
-        for(int rock: rocksVec){
-            if(pos + mid <= rock){
-                cnt++;
-                minDist = min(minDist, rock - pos);
-                pos = rock;
-            }
-        }
-        
-        if(cnt >= rocksVec.size() - n){
-            left = mid+1;
-            result = max(result,minDist);
-        }else{
-            right = mid-1;
-        }
-    }
-    return result;
+#define MAXI(A,B) A>B ? A : B
+int Dy[100010];
+int N;
+int re(int idx) {
+    if(idx<0) return 100002;
+    return idx;
 }
-
-int solution(int distance, vector<int> rocks, int n) {
-    
-    rocksVec = rocks;
-    rocksVec.push_back(distance);
-    sort(rocksVec.begin(),rocksVec.end());
-    
-    return binarySearch(distance,n);
+int Dynamic(int picked,vector<int> sticker) {
+    Dy[0]=picked;
+    for(int i=1;i<N;i++) {
+        Dy[i]=MAXI(Dy[i-1],Dy[re(i-2)]+sticker[i]);
+    }
+    if(picked==0) return Dy[N-1];
+    return Dy[N-2];
+}
+int solution(vector<int> sticker)
+{
+    int answer = 0;
+    N=sticker.size();
+    if(N==1) return sticker[0];
+    answer=Dynamic(sticker[0],sticker);
+    answer=MAXI(answer,Dynamic(0,sticker));
+    return answer;
 }
