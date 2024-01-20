@@ -1,27 +1,21 @@
-#include <iostream>
-#include <vector>
-using namespace std;
-#define MAXI(A,B) A>B ? A : B
-int Dy[100010];
-int N;
-int re(int idx) {
-    if(idx<0) return 100002;
-    return idx;
-}
-int Dynamic(int picked,vector<int> sticker) {
-    Dy[0]=picked;
-    for(int i=1;i<N;i++) {
-        Dy[i]=MAXI(Dy[i-1],Dy[re(i-2)]+sticker[i]);
-    }
-    if(picked==0) return Dy[N-1];
-    return Dy[N-2];
-}
-int solution(vector<int> sticker)
-{
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+int solution(long long num) {
     int answer = 0;
-    N=sticker.size();
-    if(N==1) return sticker[0];
-    answer=Dynamic(sticker[0],sticker);
-    answer=MAXI(answer,Dynamic(0,sticker));
-    return answer;
+    int count = 0;
+    while(num != 1) {
+        if(count < 499) {
+            if(num % 2 == 0) {
+                num /= 2;
+            } else {
+                num = num * 3 + 1;
+            }
+            count += 1;
+        } else {
+            return -1;
+        }
+    }
+    return count;
 }
