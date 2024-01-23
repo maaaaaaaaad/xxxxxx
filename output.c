@@ -1,25 +1,30 @@
 #include <stdio.h>
 
-void main() 
-{
-	int i, j, count = 1;
-	long sum = 0;
+int main() {
+    char *s1 = "aaaabbbcccccddddddddd";
+    char s2[30] = {0,};
+    int length;
+    char ch[2] = {0,};
 
-	printf("%d\t", 1);
+    ch[0] = s1[0];
 
-	for (i = 1; i <= 1000; i++) {
-		for (j = 2; j < i; j++) {
-			if ((i % j) == 0)
-				break;
-		}
+    int count = 0;
+    char countStr[10] = {0,};
+    for (int i = 1; i <= length; i++) 
+    {
+        if(ch[0] == s1[i])
+        {
+            count++;
+        }
+        else 
+        {
+            stract(s2, ch);
+            sprintf(countStr, "%d", count);
+            stract(s2, countStr);
 
-		if (i == j) {
-			printf("%d\t", i);
-			count++;
-
-			if ((count % 8) == 0)
-				printf("\n");
-		}
-	}
-	printf(count);
+            ch[0] = s1[i];
+            count = 1;
+        }
+    }
+    return 0;
 }
