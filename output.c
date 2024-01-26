@@ -1,30 +1,22 @@
-#include <stdio.h>
-
-int main() {
-    char *s1 = "aaaabbbcccccddddddddd";
-    char s2[30] = {0,};
-    int length;
-    char ch[2] = {0,};
-
-    ch[0] = s1[0];
-
-    int count = 0;
-    char countStr[10] = {0,};
-    for (int i = 1; i <= length; i++) 
-    {
-        if(ch[0] == s1[i])
-        {
-            count++;
-        }
-        else 
-        {
-            stract(s2, ch);
-            sprintf(countStr, "%d", count);
-            stract(s2, countStr);
-
-            ch[0] = s1[i];
-            count = 1;
-        }
-    }
-    return 0;
+#include <stdio.h>
+ 
+int main(void)
+{
+    int N, num;
+    int max = -1000001, min = 1000001;
+    
+    scanf("%d", &N);
+    
+    for (int i = 1; i <= n; i++){
+        scanf("%d", &num);
+        if (num > max){
+            max = num;
+        }
+        if (num < min){
+            min = num;
+        }
+    }
+    printf("%d %d", min, max);
+ 
+    return 0;
 }
